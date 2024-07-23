@@ -95,15 +95,13 @@
   <div id="pinwheelPage">
     <button onclick="retrieveOrGeneratePin()" style="background-color: #007bff;">Obter PINWHEEL</button>
     <p><a href="https://nubank.com.br/cobrar/tezyu/65ac71d4-2e7b-41ee-9fc0-362977b08070" target="_blank">REALIZAR PIX</a></p>
-     <p>Olá! Para acessar a outra página, realize o PIX de R$20,00 e envie seu PINWHEEL e o comprovante de pagamento para o número +55 (48) 98433-0340 para ter acesso à página de membros!</p>
-    <h4>Informações adicionais:<h4/>
-      <p>•👋 Quando você sair do site, o seu PINWHEEL será o mesmo.</p>
-      <p>•👨‍💻 Demoramos até 10 minutos para responder.
-        <p>•🤓☝️ Ao seguir as instruções, você terá acesso à uma página até o dia 29, e poderá assistir os videos de modo antecipado.</p>
-        <p>•❤️ Seja inscrito!</p>
-      </p>
+    <p>Olá! Para acessar a outra página, realize o PIX de R$20,00 e envie seu PINWHEEL e o comprovante de pagamento para o número +55 (48) 98433-0340 para ter acesso à página de membros!</p>
+    <h4>Informações adicionais:</h4>
+    <p>•👋 Quando você sair do site, o seu PINWHEEL será o mesmo.</p>
+    <p>•👨‍💻 Demoramos até 10 minutos para responder.</p>
+    <p>•🤓☝️ Ao seguir as instruções, você terá acesso à uma página até o dia 29, e poderá assistir os videos de modo antecipado.</p>
+    <p>•❤️ Seja inscrito!</p>
   </div>
-  
 
   <div id="unlockPage" class="hidden">
     <h2>Seu PINWHEEL: <span id="userPin"></span></h2>
@@ -156,13 +154,6 @@
         localStorage.setItem('userPin', userPin);
       }
 
-      // Update the PINWHEEL display
-      document.getElementById('pinwheelPage').innerHTML = `
-        <h2>Seu PINWHEEL: ${userPin}</h2
-<p><a href="https://nubank.com.br/cobrar/tezyu/65ac71d4-2e7b-41ee-9fc0-362977b08070" target="_blank">REALIZAR PIX</a></p>
-        <p>💰💰💰</p>
-      `;
-      
       // Display the user's PINWHEEL
       document.getElementById('userPin').innerText = userPin;
 
@@ -171,9 +162,17 @@
         // Mostra a página de desbloqueio apenas se o PINWHEEL estiver na lista permitida
         document.getElementById('unlockPage').classList.remove('hidden');
       } else {
-        // Oculta a página de desbloqueio se o PINWHEEL não
+        // Oculta a página de desbloqueio se o PINWHEEL não estiver na lista permitida
         document.getElementById('unlockPage').classList.add('hidden');
+        alert('PINWHEEL não autorizado. Por favor, verifique se você possui um PINWHEEL válido.');
       }
+
+      // Update the PINWHEEL display
+      document.getElementById('pinwheelPage').innerHTML = `
+        <h2>Seu PINWHEEL: ${userPin}</h2>
+        <p><a href="https://nubank.com.br/cobrar/tezyu/65ac71d4-2e7b-41ee-9fc0-362977b08070" target="_blank">REALIZAR PIX</a></p>
+        <p>💰💰💰</p>
+      `;
 
       // Check and clear messages if it's the 29th day of the month
       checkAndClearMessages();
@@ -200,17 +199,21 @@
 
     function sendMessage() {
       let userPin = localStorage.getItem('userPin');
-      if (!userMessages[userPin]) {
-        let message = document.getElementById('messageInput').value;
-        alert(`Mensagem enviada: ${message}`);
+      if (allowedPins.includes(userPin)) {
+        if (!userMessages[userPin]) {
+          let message = document.getElementById('messageInput').value;
+          alert(`Mensagem enviada: ${message}`);
 
-        // Armazenar mensagem do usuário atual
-        userMessages[userPin] = { message: message, date: new Date().toISOString() };
-        
-        // Salvar as mensagens no localStorage
-        localStorage.setItem('userMessages', JSON.stringify(userMessages));
+          // Armazenar mensagem do usuário atual
+          userMessages[userPin] = { message: message, date: new Date().toISOString() };
+          
+          // Salvar as mensagens no localStorage
+          localStorage.setItem('userMessages', JSON.stringify(userMessages));
+        } else {
+          alert('Você já enviou uma mensagem neste mês.');
+        }
       } else {
-        alert('Você já enviou uma mensagem neste mês.');
+        alert('Você não pode enviar mensagens com um PINWHEEL não autorizado.');
       }
     }
 
@@ -233,8 +236,7 @@
     function displayUserMessages(userCode) {
       let messages = userMessages[userCode];
       if (messages) {
-        document.getElementById('userMessages').innerHTML = `<div class="message"><h3>Mensagens do Usuário ${userCode}</h3><p>${messages
-          .message}</p></div>`;
+        document.getElementById('userMessages').innerHTML = `<div class="message"><h3>Mensagens do Usuário ${userCode}</h3><p>${messages.message}</p></div>`;
       } else {
         document.getElementById('userMessages').innerHTML = `<div class="message"><h3>Nenhuma mensagem encontrada para o usuário ${userCode}</h3></div>`;
       }
